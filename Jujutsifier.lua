@@ -156,7 +156,7 @@ local function ultraFastInitializeUI()
         local basePos = uiCache.textLabel.Position
         uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 5)
         uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -10)
-        uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 0)
+        uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 1)
         uiCache.magicHealth.Size = UDim2.new(0, 300, 0, 20)
     end)
     
