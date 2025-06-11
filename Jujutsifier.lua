@@ -309,30 +309,16 @@ else
     end)
 end
 
--- Уведомление
--- Замените последнюю часть скрипта (уведомление) на этот код:
-
 -- Уведомление (исправленная версия)
-local success, err = pcall(function()
+local success = pcall(function()
     game.StarterGui:SetCore("SendNotification", {
         Title = "Made by KeyToWxn/Sairo",
         Text = "JJS GUI - Fixed Version loaded!",
-        Duration = 8,
+        Duration = 8
     })
 end)
 
--- Если основной способ не работает, используем альтернативный
-if not success then
-    pcall(function()
-        local StarterGui = game:GetService("StarterGui")
-        StarterGui:SetCore("SendNotification", {
-            Title = "JJS GUI",
-            Text = "Script loaded successfully!",
-            Duration = 8
-        })
-    end)
-end
-
--- Если и это не работает, выводим в консоль
+-- Если основной способ не работает, выводим в консоль
 if not success then
     print("JJS GUI - Fixed Version успешно загружен!")
+end
