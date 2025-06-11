@@ -154,9 +154,9 @@ local function ultraFastInitializeUI()
     -- Настройка позиций как в оригинальном скрипте
     pcall(function()
         local basePos = uiCache.textLabel.Position
-        uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 0)
-        uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -50)
-        uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 5)
+        uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 5)
+        uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -10)
+        uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 0)
         uiCache.magicHealth.Size = UDim2.new(0, 300, 0, 20)
     end)
     
@@ -387,7 +387,7 @@ end
 pcall(function()
     game.StarterGui:SetCore("SendNotification", {
         Title = "TSB Jujutsifier",
-        Text = "Исправленная версия загружена!",
+        Text = "Made by KeyToWxn/Sairo",
         Duration = 5
     })
 end)
