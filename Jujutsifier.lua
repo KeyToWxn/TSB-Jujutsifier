@@ -276,7 +276,7 @@ else
     end)
 end
 
-playerGui:SetCore("SendNotification", {
+game.StarterGui:SetCore("SendNotification", {
         Title = "Made by KeyToWxn/Sairo";
         Text = "The Strongest Battlegrounds Jujutsifier (JJS GUI)";
         Icon = "rbxassetid://135454283842172";
