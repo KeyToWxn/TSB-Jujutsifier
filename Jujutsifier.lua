@@ -154,8 +154,8 @@ local function ultraFastInitializeUI()
     -- Настройка позиций как в оригинальном скрипте
     pcall(function()
         local basePos = uiCache.textLabel.Position
-        uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 5)
-        uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -20)
+        uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 0)
+        uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -50)
         uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 5)
         uiCache.magicHealth.Size = UDim2.new(0, 300, 0, 20)
     end)
