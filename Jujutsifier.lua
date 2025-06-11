@@ -275,3 +275,10 @@ else
         instantStart()
     end)
 end
+
+playerGui:SetCore("SendNotification", {
+        Title = "Made by KeyToWxn/Sairo";
+        Text = "The Strongest Battlegrounds Jujutsifier (JJS GUI)";
+        Icon = "rbxassetid://135454283842172";
+        Duration = "8";
+})
