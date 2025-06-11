@@ -21,58 +21,43 @@ local characterData = {
 }
 
 local preloadedFont = Font.new("rbxassetid://12187375716")
-local preloadedInstances = {}
 
-local function preloadInstances()
-    for i = 1, 5 do
-        local gradient = Instance.new("UIGradient")
-        gradient.Rotation = 90
-        gradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)), 
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(90,90,90))
-        })
-        table.insert(preloadedInstances, gradient)
+-- Улучшенная функция для создания UIGradient
+local function createGradient(parent)
+    if parent:FindFirstChild("UIGradient") then 
+        parent:FindFirstChild("UIGradient"):Destroy()
     end
     
-    for i = 1, 20 do
-        local stroke = Instance.new("UIStroke")
-        stroke.Thickness = 2
-        stroke.Transparency = 0
-        table.insert(preloadedInstances, stroke)
-    end
+    local gradient = Instance.new("UIGradient")
+    gradient.Parent = parent
+    gradient.Rotation = 90
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)), 
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(90,90,90))
+    })
+    return gradient
 end
 
-local function usePreloadedGradient(parent)
-    if parent:FindFirstChild("UIGradient") then return end
-    local gradient = table.remove(preloadedInstances, 1)
-    if gradient and gradient:IsA("UIGradient") then
-        gradient.Parent = parent
-    else
-        local newGradient = Instance.new("UIGradient")
-        newGradient.Parent = parent
-        newGradient.Rotation = 90
-        newGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)), 
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(90,90,90))
-        })
+-- Улучшенная функция для создания UIStroke
+local function createStroke(parent, thickness, transparency)
+    if parent:FindFirstChild("UIStroke") then 
+        parent:FindFirstChild("UIStroke"):Destroy()
     end
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Parent = parent
+    stroke.Thickness = thickness or 2
+    stroke.Transparency = transparency or 0
+    if thickness and thickness > 2 then
+        stroke.LineJoinMode = Enum.LineJoinMode.Miter
+    end
+    return stroke
 end
 
-local function usePreloadedStroke(parent, thickness, transparency)
-    if parent:FindFirstChild("UIStroke") then return end
-    local stroke = table.remove(preloadedInstances, 1)
-    if stroke and stroke:IsA("UIStroke") then
-        stroke.Parent = parent
-        stroke.Thickness = thickness or 2
-        stroke.Transparency = transparency or 0
-        if thickness and thickness > 2 then
-            stroke.LineJoinMode = Enum.LineJoinMode.Miter
-        end
-    else
-        local newStroke = Instance.new("UIStroke")
-        newStroke.Parent = parent
-        newStroke.Thickness = thickness or 2
-        newStroke.Transparency = transparency or 0
+-- Функция для безопасного удаления элементов
+local function safeDestroy(element)
+    if element and element.Parent then
+        element:Destroy()
     end
 end
 
@@ -111,47 +96,48 @@ local function ultraFastInitializeUI()
     uiCache.healthBar = healthBar:FindFirstChild("Bar")
     if not uiCache.healthBar then return false end
     
+    -- Применяем шрифт
     uiCache.textLabel.FontFace = preloadedFont
     uiCache.ult.FontFace = preloadedFont
     
-    local elementsToDelete = {
-        uiCache.textLabel:FindFirstChild("TextLabel"),
-        uiCache.ult:FindFirstChild("TextLabel"),
-        uiCache.healthBar:FindFirstChild("Empty")
-    }
+    -- Удаляем ненужные элементы сразу при инициализации
+    safeDestroy(uiCache.textLabel:FindFirstChild("TextLabel"))
+    safeDestroy(uiCache.ult:FindFirstChild("TextLabel"))
+    safeDestroy(uiCache.healthBar:FindFirstChild("Empty"))
     
-    for _, element in ipairs(elementsToDelete) do
-        if element then 
-            element.Parent = nil
-        end
-    end
-    
+    -- Настройка позиций
     local basePos = uiCache.textLabel.Position
     uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 5)
     uiCache.textLabel.Position = basePos + UDim2.new(0, 0, 0, -20)
     uiCache.magicHealth.Position = uiCache.magicHealth.Position + UDim2.new(0, 0, 0, 5)
     uiCache.magicHealth.Size = UDim2.new(0, 300, 0, 20)
     
+    -- Настройка health bar
     uiCache.healthBar.Image = ""
-    health.Glow.Image = ""
+    if health:FindFirstChild("Glow") then
+        health.Glow.Image = ""
+    end
     uiCache.healthBar.BackgroundTransparency = 0
     
-    if not uiCache.magicHealth:FindFirstChild("CustomFrame") then
-        local frame = Instance.new("Frame")
-        frame.Name = "CustomFrame"
-        frame.Parent = uiCache.magicHealth
-        frame.Size = UDim2.new(1, 0, 1, 0)
-        frame.Position = health.Position
-        frame.BackgroundTransparency = 0.5
-        
-        usePreloadedGradient(frame)
-    end
+    -- Создание кастомного фрейма
+    local existingFrame = uiCache.magicHealth:FindFirstChild("CustomFrame")
+    if existingFrame then existingFrame:Destroy() end
     
-    usePreloadedStroke(uiCache.textLabel, 2)
-    usePreloadedStroke(uiCache.ult, 2)
-    usePreloadedStroke(uiCache.magicHealth, 2.3, 0.35)
-    usePreloadedGradient(uiCache.healthBar)
+    local frame = Instance.new("Frame")
+    frame.Name = "CustomFrame"
+    frame.Parent = uiCache.magicHealth
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.Position = health.Position
+    frame.BackgroundTransparency = 0.5
+    createGradient(frame)
     
+    -- Применяем стили к основным элементам
+    createStroke(uiCache.textLabel, 2)
+    createStroke(uiCache.ult, 2)
+    createStroke(uiCache.magicHealth, 2.3, 0.35)
+    createGradient(uiCache.healthBar)
+    
+    -- Инициализация кнопок хотбара
     uiCache.buttons = {}
     for i = 1, 13 do
         local button = hotbarPath:FindFirstChild(tostring(i))
@@ -162,20 +148,44 @@ local function ultraFastInitializeUI()
                 local reuse = base:FindFirstChild("Reuse")
                 
                 if number and reuse then
-                    local delete4 = number:FindFirstChild("Number")
-                    local delete5 = reuse:FindFirstChild("Reuse")
-                    if delete4 then delete4.Parent = nil end
-                    if delete5 then delete5.Parent = nil end
+                    -- Удаляем дубликаты
+                    safeDestroy(number:FindFirstChild("Number"))
+                    safeDestroy(reuse:FindFirstChild("Reuse"))
                     
-                    usePreloadedStroke(number, 1.3)
-                    usePreloadedStroke(reuse, 1.3)
+                    -- Применяем стили
+                    createStroke(number, 1.3)
+                    createStroke(reuse, 1.3)
                     
+                    -- Применяем шрифт
                     number.FontFace = preloadedFont
                     reuse.FontFace = preloadedFont
                     
+                    -- Ищем элемент кулдауна более тщательно
+                    local cooldown = nil
+                    
+                    -- Сначала ищем прямо в button
+                    cooldown = button:FindFirstChild("Cooldown")
+                    
+                    -- Если не нашли, ищем в base
+                    if not cooldown and base then
+                        cooldown = base:FindFirstChild("Cooldown")
+                    end
+                    
+                    -- Если все еще не нашли, ищем рекурсивно
+                    if not cooldown then
+                        for _, child in pairs(button:GetDescendants()) do
+                            if child.Name == "Cooldown" and child:IsA("GuiObject") then
+                                cooldown = child
+                                break
+                            end
+                        end
+                    end
+                    
                     uiCache.buttons[i] = {
                         button = button,
-                        cooldown = button:FindFirstChild("Cooldown", true)
+                        cooldown = cooldown,
+                        number = number,
+                        reuse = reuse
                     }
                 end
             end
@@ -188,21 +198,41 @@ end
 local function optimizedMainLoop()
     if not uiCache.textLabel then return end
     
+    -- Постоянное подавление нежелательных элементов
     local delete1 = uiCache.textLabel:FindFirstChild("TextLabel")
     local delete2 = uiCache.ult:FindFirstChild("TextLabel")
     local delete3 = uiCache.healthBar:FindFirstChild("Empty")
     
-    if delete1 then delete1.Text = "" end
-    if delete2 then delete2.Text = "" end  
-    if delete3 then delete3.Enabled = false end
+    if delete1 then 
+        delete1.Text = ""
+        delete1.Visible = false
+    end
+    if delete2 then 
+        delete2.Text = ""
+        delete2.Visible = false
+    end  
+    if delete3 then 
+        delete3.Enabled = false
+        delete3.Visible = false
+    end
     
-    for _, buttonData in pairs(uiCache.buttons) do
+    -- Обновление кулдаунов кнопок
+    for i, buttonData in pairs(uiCache.buttons) do
         if buttonData.cooldown then
             buttonData.cooldown.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
             buttonData.cooldown.BackgroundTransparency = 0.2
         end
+        
+        -- Убеждаемся что шрифт применен
+        if buttonData.number then
+            buttonData.number.FontFace = preloadedFont
+        end
+        if buttonData.reuse then
+            buttonData.reuse.FontFace = preloadedFont
+        end
     end
     
+    -- Обновление данных персонажа
     local character = localPlayer:GetAttribute("Character")
     if character then
         local charData = characterData[character]
@@ -226,6 +256,7 @@ local function aggressiveInitialize()
         
         currentConnection = RunService.Heartbeat:Connect(optimizedMainLoop)
         
+        print("JJS GUI успешно инициализирован!")
         return true
     end
     
@@ -245,8 +276,6 @@ local function instantStart()
     isInitialized = false
     initAttempts = 0
     
-    preloadInstances()
-    
     local initConnection
     initConnection = RunService.Heartbeat:Connect(function()
         if aggressiveInitialize() then
@@ -255,7 +284,9 @@ local function instantStart()
     end)
 end
 
+-- Event connections
 localPlayer.CharacterAdded:Connect(function()
+    task.wait(0.1) -- Небольшая задержка для полной загрузки UI
     instantStart()
 end)
 
@@ -266,19 +297,42 @@ localPlayer.CharacterRemoving:Connect(function()
     isInitialized = false
 end)
 
+-- Запуск
 if localPlayer.Character then
     instantStart()
 else
     local charAddedConnection
     charAddedConnection = localPlayer.CharacterAdded:Connect(function()
         charAddedConnection:Disconnect()
+        task.wait(0.1)
         instantStart()
     end)
 end
 
-game.StarterGui:SetCore("SendNotification", {
-        Title = "Made by KeyToWxn/Sairo";
-        Text = "The Strongest Battlegrounds Jujutsifier (JJS GUI)";
-        Icon = "rbxassetid://135454283842172";
-        Duration = "8";
-})
+-- Уведомление
+-- Замените последнюю часть скрипта (уведомление) на этот код:
+
+-- Уведомление (исправленная версия)
+local success, err = pcall(function()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Made by KeyToWxn/Sairo",
+        Text = "JJS GUI - Fixed Version loaded!",
+        Duration = 8,
+    })
+end)
+
+-- Если основной способ не работает, используем альтернативный
+if not success then
+    pcall(function()
+        local StarterGui = game:GetService("StarterGui")
+        StarterGui:SetCore("SendNotification", {
+            Title = "JJS GUI",
+            Text = "Script loaded successfully!",
+            Duration = 8
+        })
+    end)
+end
+
+-- Если и это не работает, выводим в консоль
+if not success then
+    print("JJS GUI - Fixed Version успешно загружен!")
