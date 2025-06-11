@@ -151,7 +151,7 @@ local function ultraFastInitializeUI()
     safeDestroy(findChild(uiCache.ult, "TextLabel"))
     safeDestroy(findChild(uiCache.healthBar, "Empty"))
     
-    -- Безопасная настройка позиций
+    -- Настройка позиций как в оригинальном скрипте
     pcall(function()
         local basePos = uiCache.textLabel.Position
         uiCache.ult.Position = basePos + UDim2.new(0, 0, 0, 5)
@@ -160,7 +160,7 @@ local function ultraFastInitializeUI()
         uiCache.magicHealth.Size = UDim2.new(0, 300, 0, 20)
     end)
     
-    -- Настройка health bar
+    -- Настройка health bar без изменения размеров
     pcall(function()
         uiCache.healthBar.Image = ""
         local glow = findChild(health, "Glow")
@@ -170,7 +170,7 @@ local function ultraFastInitializeUI()
         uiCache.healthBar.BackgroundTransparency = 0
     end)
     
-    -- Создание кастомного фрейма
+    -- Создание кастомного фрейма как в оригинале
     pcall(function()
         local existingFrame = findChild(uiCache.magicHealth, "CustomFrame")
         if existingFrame then existingFrame:Destroy() end
